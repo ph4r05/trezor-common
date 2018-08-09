@@ -107,6 +107,38 @@ message MoneroTransactionInitAck {
 }
 
 /**
+ * Structure representing Monero transaction source entry, UTXO
+ */
+message MoneroTransactionSourceEntry {
+	repeated MoneroOutputEntry outputs = 1;
+	optional uint64 real_output = 2;
+	optional bytes real_out_tx_key = 3;
+	repeated bytes real_out_additional_tx_keys = 4;
+	optional uint64 real_output_in_tx_index = 5;
+	optional uint64 amount = 6;
+	optional bool rct = 7;
+	optional bytes mask = 8;
+	optional MoneroMultisigKLRki multisig_kLRki = 9;
+	
+	message MoneroRctKey {
+		optional bytes dest = 1;
+		optional bytes mask = 2;
+	}
+	
+	message MoneroOutputEntry {
+		optional uint64 amount = 1;
+		optional MoneroRctKey key = 2;
+	}
+	
+	message MoneroMultisigKLRki {
+		optional bytes K = 1;
+		optional bytes L = 2;
+		optional bytes R = 3;
+		optional bytes ki = 4;
+	}
+}
+
+/**
  * Request: Sub request of MoneroTransactionSign. Sends one UTXO to device
  * @next MoneroTransactionSetInputAck
  */
@@ -114,38 +146,6 @@ message MoneroTransactionSetInputRequest {
     optional uint32 version = 1;
     optional bytes src_entr = 2;  // xmrtypes.TxSourceEntry
     optional MoneroTransactionSourceEntry src_entr_obj = 3;
-
-    /**
-     * Structure representing Monero transaction source entry, UTXO
-     */
-    message MoneroTransactionSourceEntry {
-        repeated MoneroOutputEntry outputs = 1;
-        optional uint64 real_output = 2;
-        optional bytes real_out_tx_key = 3;
-        repeated bytes real_out_additional_tx_keys = 4;
-        optional uint64 real_output_in_tx_index = 5;
-        optional uint64 amount = 6;
-        optional bool rct = 7;
-        optional bytes mask = 8;
-        optional MoneroMultisigKLRki multisig_kLRki = 9;
-		
-		message MoneroRctKey {
-			optional bytes dest = 1;
-			optional bytes mask = 2;
-		}
-        
-        message MoneroOutputEntry {
-			optional uint64 amount = 1;
-			optional MoneroRctKey key = 2;
-        }
-        
-        message MoneroMultisigKLRki {
-        	optional bytes K = 1;
-			optional bytes L = 2;
-			optional bytes R = 3;
-			optional bytes ki = 4;
-        }
-    }
 }
 
 /**
