@@ -48,6 +48,23 @@ message MoneroWatchKey {
 }
 
 /**
+ * Structure representing Monero transaction destination entry
+ */
+message MoneroTransactionDestinationEntry {
+	optional uint64 amount = 1;
+	optional MoneroAccountPublicAddress addr = 2;
+	optional bool is_subaddress = 3;
+	
+	/**
+	 * Structure representing Monero public address
+	 */
+	message MoneroAccountPublicAddress {
+		optional bytes spend_public_key = 1;
+		optional bytes view_public_key = 2;
+	}
+}
+
+/**
  * Request: Sub request of MoneroTransactionSign. Initializes transaction signing.
  * @start
  * @next MoneroTransactionInitAck
@@ -75,21 +92,6 @@ message MoneroTransactionInitRequest {
         optional bytes exp_tx_prefix_hash = 12;
         repeated bytes use_tx_keys = 13;
         optional bool is_bulletproof = 14;
-        /**
-        * Structure representing Monero transaction destination entry
-        */
-        message MoneroTransactionDestinationEntry {
-            optional uint64 amount = 1;
-            optional MoneroAccountPublicAddress addr = 2;
-            optional bool is_subaddress = 3;
-            /**
-            * Structure representing Monero public address
-            */
-            message MoneroAccountPublicAddress {
-                optional bytes spend_public_key = 1;
-                optional bytes view_public_key = 2;
-            }
-        }
     }
 }
 
@@ -144,8 +146,7 @@ message MoneroTransactionSourceEntry {
  */
 message MoneroTransactionSetInputRequest {
     optional uint32 version = 1;
-    optional bytes src_entr = 2;  // xmrtypes.TxSourceEntry
-    optional MoneroTransactionSourceEntry src_entr_obj = 3;
+    optional MoneroTransactionSourceEntry src_entr = 2;
 }
 
 /**
@@ -181,8 +182,7 @@ message MoneroTransactionInputsPermutationAck {
  * @next MoneroTransactionInputViniAck
  */
 message MoneroTransactionInputViniRequest {
-    optional bytes src_entr = 1;  // xmrtypes.TxSourceEntry
-    optional MoneroTransactionSourceEntry src_entr_obj = 6;
+    optional MoneroTransactionSourceEntry src_entr = 1; 
     optional bytes vini = 2;      // xmrtypes.TxinToKey
     optional bytes vini_hmac = 3;
     optional bytes pseudo_out = 4;
@@ -201,7 +201,7 @@ message MoneroTransactionInputViniAck {
  * @next MoneroTransactionSetOutputAck
  */
 message MoneroTransactionSetOutputRequest {
-    optional bytes dst_entr = 1;  // xmrtypes.TxDestinationEntry
+    optional MoneroTransactionDestinationEntry dst_entr = 1;
     optional bytes dst_entr_hmac = 2;
 }
 
@@ -262,8 +262,7 @@ message MoneroTransactionMlsagDoneAck {
  * @next MoneroTransactionSignInputAck
  */
 message MoneroTransactionSignInputRequest {
-    optional bytes src_entr = 1; // xmrtypes.TxSourceEntry
-    optional MoneroTransactionSourceEntry src_entr_obj = 8;
+    optional MoneroTransactionSourceEntry src_entr = 1; // xmrtypes.TxSourceEntry
     optional bytes vini = 2;     // xmrtypes.TxinToKey
     optional bytes vini_hmac = 3;
     optional bytes pseudo_out = 4;
