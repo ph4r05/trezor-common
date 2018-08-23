@@ -407,6 +407,25 @@ message MoneroKeyImageSyncRequest {
     optional MoneroKeyImageSyncFinalRequest final_msg = 3;
 }
 
+
+/**
+ * Request: Lite protocol initialization request
+ * @start
+ * @next MoneroLiteInitAck
+ */
+message MoneroLiteInitRequest {
+	repeated uint32 address_n = 1;          // BIP-32 path to derive the key from master node
+    optional uint32 network_type = 3;       // Main-net / testnet / stagenet
+}
+
+/**
+ * Request: Lite protocol initialization response
+ * @end
+ */
+message MoneroLiteInitAck {
+	
+}
+
 /**
  * Request: Lite protocol generic request
  * @start
