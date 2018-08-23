@@ -408,6 +408,27 @@ message MoneroKeyImageSyncRequest {
 }
 
 /**
+ * Request: Lite protocol generic request
+ * @start
+ * @next MoneroLiteAck
+ */
+message MoneroLiteRequest {
+    optional uint32 ins = 1;
+	optional uint32 p1 = 2;
+	optional uint32 p2 = 3;
+	optional bytes data = 4;
+}
+
+/**
+ * Request: Lite protocol generic response
+ * @end
+ */
+message MoneroLiteAck {
+	optional uint64 sw = 1;
+	optional bytes data = 2;
+}
+
+/**
  * Request: Universal Monero protocol implementation diagnosis request.
  * @start
  * @next DebugMoneroDiagAck
@@ -433,3 +454,5 @@ message DebugMoneroDiagAck {
     optional bytes data1 = 5;
     optional bytes data2 = 6;
 }
+
+
