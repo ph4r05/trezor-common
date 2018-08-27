@@ -57,16 +57,17 @@ message MoneroTransactionDestinationEntry {
  */
 message MoneroTransactionRsigData {
     optional uint32 version = 1;
-    optional uint32 offload_type = 2;
-    repeated uint64 grouping = 3;  // aggregation scheme for BP
+    optional uint32 rsig_type = 2;
+    optional uint32 offload_type = 3;
+    repeated uint64 grouping = 4;  // aggregation scheme for BP
 
-    optional uint32 step = 4;
-    optional uint64 operation = 5;
-    optional bytes seed = 6;       // determ. mask seed
-    optional bytes mask = 7;       // mask vector
-    optional bytes amount = 8;     // amount vector
-    optional bytes rsig = 9;       // range sig, full or partial
-    repeated MoneroTransactionDestinationEntry outputs = 10;
+    optional uint32 step = 5;
+    optional uint64 operation = 6;
+    optional bytes seed = 7;       // determ. mask seed
+    optional bytes mask = 8;       // mask vector
+    optional bytes amount = 9;     // amount vector
+    optional bytes rsig = 10;       // range sig, full or partial
+    repeated MoneroTransactionDestinationEntry outputs = 11;
 }
 
 /**
