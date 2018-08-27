@@ -121,7 +121,7 @@ message MoneroTransactionInitRequest {
         optional bool is_multisig = 11;
         optional bytes exp_tx_prefix_hash = 12;
         repeated bytes use_tx_keys = 13;
-        optional bool is_bulletproof = 14;
+        optional uint32 rsig_type = 14;
     }
 }
 
