@@ -211,9 +211,9 @@ message MoneroTransactionRsigData {
 
 /**
  * Request: Sub request of MoneroTransactionSign. Sent after all inputs have been sent. Useful for rangeisg offloading.
- * @next MoneroTransactionInputViniAck
+ * @next MoneroTransactionAllInputsSetAck
  */
-message MoneroTransactionAllInputSetRequest {
+message MoneroTransactionAllInputsSetRequest {
     optional MoneroTransactionRsigData rsig_data = 3;
 }
 
@@ -221,7 +221,7 @@ message MoneroTransactionAllInputSetRequest {
  * Response: Response to setting UTXO to the device
  * @next MoneroTransactionSignRequest
  */
-message MoneroTransactionAllInputSetAck {
+message MoneroTransactionAllInputsSetAck {
     optional MoneroTransactionRsigData rsig_data = 3;
 }
 
