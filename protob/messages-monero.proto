@@ -136,6 +136,7 @@ message MoneroTransactionInitAck {
     repeated bytes hmacs = 4;
     optional bool many_inputs = 5;
     optional bool many_outputs = 6;
+    optional uint32 offload_type = 7;
 }
 
 /**
