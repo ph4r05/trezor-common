@@ -204,8 +204,9 @@ message MoneroTransactionRsigData {
     optional bytes seed = 4;       // determ. mask seed
     optional bytes mask = 5;       // mask vector
     optional bytes amount = 6;     // amount vector
-    optional bytes rsig = 7;       // range sig, full or partial
-    repeated MoneroTransactionDestinationEntry outputs = 8;
+    repeated uint64 grouping = 7;  // aggregation scheme for BP
+    optional bytes rsig = 8;       // range sig, full or partial
+    repeated MoneroTransactionDestinationEntry outputs = 9;
 }
 
 /**
