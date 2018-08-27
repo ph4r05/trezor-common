@@ -356,7 +356,9 @@ message MoneroTransactionFinalAck {
  * @wrap MoneroTransactionSetInputRequest
  * @wrap MoneroTransactionInputsPermutationRequest
  * @wrap MoneroTransactionInputViniRequest
+ * @wrap MoneroTransactionAllInputsSetRequest
  * @wrap MoneroTransactionSetOutputRequest
+ * @wrap MoneroTransactionRangeSigRequest
  * @wrap MoneroTransactionAllOutSetRequest
  * @wrap MoneroTransactionMlsagDoneRequest
  * @wrap MoneroTransactionSignInputRequest
@@ -367,11 +369,13 @@ message MoneroTransactionSignRequest {
     optional MoneroTransactionSetInputRequest set_input = 2;
     optional MoneroTransactionInputsPermutationRequest input_permutation = 3;
     optional MoneroTransactionInputViniRequest input_vini = 4;
-    optional MoneroTransactionSetOutputRequest set_output = 5;
-    optional MoneroTransactionAllOutSetRequest all_out_set = 6;
-    optional MoneroTransactionMlsagDoneRequest mlsag_done = 7;
-    optional MoneroTransactionSignInputRequest sign_input = 8;
-    optional MoneroTransactionFinalRequest final_msg = 9;
+    optional MoneroTransactionAllInputsSetRequest all_in_set = 5;
+    optional MoneroTransactionSetOutputRequest set_output = 6;
+    optional MoneroTransactionRangeSigRequest rsig = 7;
+    optional MoneroTransactionAllOutSetRequest all_out_set = 8;
+    optional MoneroTransactionMlsagDoneRequest mlsag_done = 9;
+    optional MoneroTransactionSignInputRequest sign_input = 10;
+    optional MoneroTransactionFinalRequest final_msg = 11;
 }
 
 /**
