@@ -214,15 +214,15 @@ message MoneroTransactionRsigData {
  * @next MoneroTransactionAllInputsSetAck
  */
 message MoneroTransactionAllInputsSetRequest {
-    optional MoneroTransactionRsigData rsig_data = 3;
+    optional MoneroTransactionRsigData rsig_data = 1;
 }
 
 /**
- * Response: Response to setting UTXO to the device
+ * Response: Response to after all inputs have been set.
  * @next MoneroTransactionSignRequest
  */
 message MoneroTransactionAllInputsSetAck {
-    optional MoneroTransactionRsigData rsig_data = 3;
+    optional MoneroTransactionRsigData rsig_data = 1;
 }
 
 /**
@@ -245,6 +245,22 @@ message MoneroTransactionSetOutputAck {
     optional MoneroTransactionRsigData rsig_data = 3;
     optional bytes out_pk = 4;
     optional bytes ecdh_info = 5;
+}
+
+/**
+ * Request: Sub request of MoneroTransactionSign. Rangesig offloading roundtrips.
+ * @next MoneroTransactionAllInputsSetAck
+ */
+message MoneroTransactionRangeSigRequest {
+    optional MoneroTransactionRsigData rsig_data = 1;
+}
+
+/**
+ * Response: Response to rangesig offloading request
+ * @next MoneroTransactionSignRequest
+ */
+message MoneroTransactionRangeSigAck {
+    optional MoneroTransactionRsigData rsig_data = 1;
 }
 
 /**
