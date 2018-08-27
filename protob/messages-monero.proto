@@ -195,12 +195,43 @@ message MoneroTransactionInputViniAck {
 }
 
 /**
+ * Range sig parameters / data.
+ */
+message MoneroTransactionRsigData {
+    optional uint32 version = 1;
+    optional uint32 step = 2;
+    optional uint64 operation = 3;
+    optional bytes seed = 4;       // determ. mask seed
+    optional bytes mask = 5;       // mask vector
+    optional bytes amount = 6;     // amount vector
+    optional bytes rsig = 7;       // range sig, full or partial
+    repeated MoneroTransactionDestinationEntry outputs = 8;
+}
+
+/**
+ * Request: Sub request of MoneroTransactionSign. Sent after all inputs have been sent. Useful for rangeisg offloading.
+ * @next MoneroTransactionInputViniAck
+ */
+message MoneroTransactionAllInputSetRequest {
+    optional MoneroTransactionRsigData rsig_data = 3;
+}
+
+/**
+ * Response: Response to setting UTXO to the device
+ * @next MoneroTransactionSignRequest
+ */
+message MoneroTransactionAllInputSetAck {
+    optional MoneroTransactionRsigData rsig_data = 3;
+}
+
+/**
  * Request: Sub request of MoneroTransactionSign. Sends one transaction destination to device (HMACed)
  * @next MoneroTransactionSetOutputAck
  */
 message MoneroTransactionSetOutputRequest {
     optional MoneroTransactionDestinationEntry dst_entr = 1;
     optional bytes dst_entr_hmac = 2;
+    optional MoneroTransactionRsigData rsig_data = 3;
 }
 
 /**
@@ -210,7 +241,7 @@ message MoneroTransactionSetOutputRequest {
 message MoneroTransactionSetOutputAck {
     optional bytes tx_out = 1;  // xmrtypes.TxOut
     optional bytes vouti_hmac = 2;
-    optional bytes rsig = 3;    // byte-encoded range signature
+    optional MoneroTransactionRsigData rsig_data = 3;
     optional bytes out_pk = 4;
     optional bytes ecdh_info = 5;
 }
@@ -220,6 +251,7 @@ message MoneroTransactionSetOutputAck {
  * @next MoneroTransactionAllOutSetAck
  */
 message MoneroTransactionAllOutSetRequest {
+    optional MoneroTransactionRsigData rsig_data = 1;
 }
 
 /**
