@@ -44,39 +44,6 @@ message CardanoGetPublicKey {
 message CardanoPublicKey {
     optional string xpub = 1;                               // Xpub key
     optional hw.trezor.messages.common.HDNodeType node = 2; // BIP-32 public node
-    optional string root_hd_passphrase = 3;                 // HD passphrase for root in hex format
-}
-
-/**
- * Request: Ask device to sign Cardano message
- * @start
- * @next CardanoMessageSignature
- * @next Failure
- */
-message CardanoSignMessage {
-    repeated uint32 address_n = 1;  // BIP-32 path to derive the key from master node
-    optional bytes message = 2;     // message to be signed
-}
-
-/**
- * Response: Signed Cardano message
- * @end
- */
-message CardanoMessageSignature {
-    optional bytes public_key = 1;  // public key which was used to sign mesage
-    optional bytes signature = 2;   // signature of the message
-}
-
-/**
- * Request: Ask device to verify Cardano message
- * @start
- * @next Success
- * @next Failure
- */
-message CardanoVerifyMessage {
-    optional bytes public_key = 1;  // Public key which was used to sign message
-    optional bytes signature = 2;   // signature to verify
-    optional bytes message = 3;     // message to verify
 }
 
 /**
@@ -90,6 +57,7 @@ message CardanoSignTx {
     repeated CardanoTxInputType inputs = 1;     // inputs to be used in transaction
     repeated CardanoTxOutputType outputs = 2;   // outputs to be used in transaction
     optional uint32 transactions_count = 3;     // transactions count
+    optional uint32 network = 4;                // network number
     /**
      * Structure representing cardano transaction input
      */

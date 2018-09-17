@@ -6,7 +6,6 @@ import re
 import sys
 import os
 import glob
-import binascii
 import struct
 import zlib
 from collections import defaultdict
@@ -154,13 +153,24 @@ def highlight_key(coin, color):
     return f"{key} {name}"
 
 
-def find_address_collisions(coins, field):
+def find_collisions(coins, field):
     """Detects collisions in a given field. Returns buckets of colliding coins."""
     collisions = defaultdict(list)
     for coin in coins:
         value = coin[field]
         collisions[value].append(coin)
     return {k: v for k, v in collisions.items() if len(v) > 1}
+
+
+def check_eth(coins):
+    check_passed = True
+    chains = find_collisions(coins, "chain")
+    for key, bucket in chains.items():
+        bucket_str = ", ".join(f"{coin['key']} ({coin['name']})" for coin in bucket)
+        chain_name_str = "colliding chain name " + crayon(None, key, bold=True) + ":"
+        print_log(logging.ERROR, chain_name_str, bucket_str)
+        check_passed = False
+    return check_passed
 
 
 def check_btc(coins):
@@ -233,7 +243,7 @@ def check_btc(coins):
 
     # slip44 collisions
     print("Checking SLIP44 prefix collisions...")
-    slip44 = find_address_collisions(coins, "slip44")
+    slip44 = find_collisions(coins, "slip44")
     if print_collision_buckets(slip44, "key"):
         check_passed = False
 
@@ -241,12 +251,12 @@ def check_btc(coins):
     nocashaddr = [coin for coin in coins if not coin.get("cashaddr_prefix")]
 
     print("Checking address_type collisions...")
-    address_type = find_address_collisions(nocashaddr, "address_type")
+    address_type = find_collisions(nocashaddr, "address_type")
     if print_collision_buckets(address_type, "address type"):
         check_passed = False
 
     print("Checking address_type_p2sh collisions...")
-    address_type_p2sh = find_address_collisions(nocashaddr, "address_type_p2sh")
+    address_type_p2sh = find_collisions(nocashaddr, "address_type_p2sh")
     # we ignore failed checks on P2SH, because reasons
     print_collision_buckets(address_type_p2sh, "address type", logging.WARNING)
 
@@ -417,9 +427,9 @@ def coindef_from_dict(coin):
         if val is None and fflags & protobuf.FLAG_REPEATED:
             val = []
         elif fname == "signed_message_header":
-            val = val.encode("utf-8")
+            val = val.encode()
         elif fname == "hash_genesis_block":
-            val = binascii.unhexlify(val)
+            val = bytes.fromhex(val)
         setattr(proto, fname, val)
 
     return proto
@@ -506,6 +516,10 @@ def check(backend, icons, show_duplicates):
     if not check_btc(defs.bitcoin):
         all_checks_passed = False
 
+    print("Checking Ethereum networks...")
+    if not check_eth(defs.eth):
+        all_checks_passed = False
+
     if show_duplicates == "all":
         dup_level = logging.DEBUG
     elif show_duplicates == "nontoken":
@@ -541,8 +555,13 @@ def check(backend, icons, show_duplicates):
 
 
 @cli.command()
+# fmt: off
 @click.option("-o", "--outfile", type=click.File(mode="w"), default="./coins.json")
-def dump(outfile):
+@click.option("-s/-S", "--support/--no-support", default=True, help="Include support data for each coin")
+@click.option("-p", "--pretty", is_flag=True, help="Generate nicely formatted JSON")
+@click.option("-t", "--tokens", type=click.Choice(["full", "stripped", "none"]), default="full", help="Filter token data")
+# fmt: on
+def dump(outfile, support, pretty, tokens):
     """Dump all coin data in a single JSON file.
 
     This file is structured the same as the internal data. That is, top-level object
@@ -555,21 +574,43 @@ def dump(outfile):
     - 'shortcut' - currency symbol
     - 'key' - unique identifier, e.g., 'bitcoin:BTC'
     - 'support' - a dict with entries per known device
+
+    To control the size and properties of the resulting file, you can specify whether
+    or not you want pretty-printing, whether or not to include support data with
+    each coin, and whether to include information about ERC20 tokens, which takes up
+    several hundred kB of space.
+
+    \b
+    The option '--tokens' can have one of three values:
+    'full': include all token data
+    'stripped': exclude 'social' links and 'logo' data from tokens
+    'none': exclude the 'erc20' category altogether.
     """
     coins = coin_info.coin_info()
-    support_info = coin_info.support_info(coins.as_list())
 
-    for category in coins.values():
-        for coin in category:
-            coin["support"] = support_info[coin["key"]]
+    if support:
+        support_info = coin_info.support_info(coins.as_list())
+
+        for category in coins.values():
+            for coin in category:
+                coin["support"] = support_info[coin["key"]]
 
     # get rid of address_bytes which are bytes which can't be JSON encoded
     for coin in coins.erc20:
         coin.pop("address_bytes", None)
+        if tokens == "stripped":
+            coin.pop("social", None)
+            coin.pop("logo", None)
+
+    if tokens == "none":
+        del coins["erc20"]
 
     with outfile:
-        json.dump(coins, outfile, indent=4, sort_keys=True)
-        outfile.write("\n")
+        if pretty:
+            json.dump(coins, outfile, indent=4, sort_keys=True)
+            outfile.write("\n")
+        else:
+            json.dump(coins, outfile)
 
 
 @cli.command()
@@ -587,7 +628,7 @@ def coindefs(outfile):
         icon = Image.open(coin["icon"])
         ser = serialize_coindef(coindef_from_dict(coin), convert_icon(icon))
         sig = sign(ser)
-        definition = binascii.hexlify(sig + ser).decode("ascii")
+        definition = (sig + ser).hex()
         coindefs[key] = definition
 
     with outfile:
